@@ -1,5 +1,34 @@
 [![a header for a software project about building containers for AI and machine learning](https://raw.githubusercontent.com/dusty-nv/jetson-containers/docs/docs/images/header_blueprint_rainbow.jpg)](https://www.jetson-ai-lab.com)
 
+# Building Torch-TensorRT container for JetPack 6.0
+
+- Jetpack 6.0 (L4T R36.3.0)
+- CUDA 12.4
+- cuDNN 9.0
+- TensorRT 10.0
+- PyTorch 2.3.0
+- Torch-TensorRT 2.3.0
+
+Torch-TensorRT has to be built from source for JetPack 6.0, and for that it needs TensorRT 10.0, which needs CUDA 12.4. A bit hacky now, making use of JetPack 5.0 workspace files, but it works. Should be cleaner once all these packages are built for JetPack 6.0. Ideally, we would also have included `ros:humble-ros-base`, but this tries to compile OpenCV and this apparently gives errors with CUDA for this specific configuration (it worked fine with CUDA 12.2).
+
+To solve this, build a container like this (after installing `jetson-containers` following the instructions below):
+
+```bash
+CUDA_VERSION=12.4 jetson-containers build --name=torch_tensorrt cuda:12.4 pytorch:2.3 tensorrt:10.0 torch_tensorrt
+```
+
+which results in `torch_tensorrt:r36.3.0-cu124`. Run the container like so:
+
+```bash
+jetson-containers run torch_tensorrt:r36.3.0-cu124
+```
+
+This can then be used in a [Dockerfile](Dockerfile) to include all the remaining stuff we need for setup! Build it:
+
+```bash
+docker build -t my_container:0.0.1 .
+```
+
 # Machine Learning Containers for Jetson and JetPack
 
 [![l4t-pytorch](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-pytorch_jp51.yml?label=l4t-pytorch)](/packages/l4t/l4t-pytorch)  [![l4t-tensorflow](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-tensorflow-tf2_jp51.yml?label=l4t-tensorflow)](/packages/l4t/l4t-tensorflow) [![l4t-ml](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-ml_jp51.yml?label=l4t-ml)](/packages/l4t/l4t-ml) [![l4t-diffusion](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-diffusion_jp51.yml?label=l4t-diffusion)](/packages/l4t/l4t-diffusion) [![l4t-text-generation](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-text-generation_jp60.yml?label=l4t-text-generation)](/packages/l4t/l4t-text-generation)
