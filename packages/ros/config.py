@@ -41,5 +41,6 @@ for ROS_DISTRO in ROS_DISTROS:
         else:
             pkg['dockerfile'] = 'Dockerfile.ros2'
             pkg['test'] = 'test_ros2.sh'
+            pkg['depends'] = []
             
         package.append(pkg)

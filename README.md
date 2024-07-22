@@ -8,26 +8,25 @@
 - TensorRT 10.0
 - PyTorch 2.3.0
 - Torch-TensorRT 2.3.0
+- ROS2 Humble
 
-Torch-TensorRT has to be built from source for JetPack 6.0, and for that it needs TensorRT 10.0, which needs CUDA 12.4. A bit hacky now, making use of JetPack 5.0 workspace files, but it works. Should be cleaner once all these packages are built for JetPack 6.0. Ideally, we would also have included `ros:humble-ros-base`, but this tries to compile OpenCV and this apparently gives errors with CUDA for this specific configuration (it worked fine with CUDA 12.2).
+Torch-TensorRT has to be built from source for JetPack 6.0, and for that it needs TensorRT 10.0, which needs CUDA 12.4. A bit hacky now, making use of JetPack 5.0 workspace files, but it works. Should be cleaner once all these packages are built for JetPack 6.0. We also modify `ros:humble-ros-base` to not compile from source but use packages, else this tries to compile OpenCV and this apparently gives errors with CUDA for this specific configuration (it worked fine with CUDA 12.2).
 
-To solve this, build a container like this (after installing `jetson-containers` following the instructions below):
-
-```bash
-CUDA_VERSION=12.4 jetson-containers build --name=torch_tensorrt cuda:12.4 pytorch:2.3 tensorrt:10.0 torch_tensorrt
-```
-
-which results in `torch_tensorrt:r36.3.0-cu124`. Run the container like so:
+To build a container like this (after installing `jetson-containers` following the instructions below), do:
 
 ```bash
-jetson-containers run torch_tensorrt:r36.3.0-cu124
+CUDA_VERSION=12.4 jetson-containers build --name=torch_tensorrt cuda:12.4 pytorch:2.3 tensorrt:10.0 torch_tensorrt ros:humble-ros-base
 ```
 
-This can then be used in a [Dockerfile](Dockerfile) to include all the remaining stuff we need for setup! Build it:
+which results in `torch_tensorrt_ros:l4t-r36.3.0`. Run the container like so:
 
 ```bash
-docker build -t my_container:0.0.1 .
+jetson-containers run torch_tensorrt_ros:l4t-r36.3.0
 ```
+
+This can then be used in a Dockerfile to include all the remaining stuff we need for setup!
+
+In the end, it might be nicer to use [`jetson-inference`](https://github.com/dusty-nv/jetson-inference/) for this, but that doesn't have Torch-TensorRT, so we would need another way to convert models.
 
 # Machine Learning Containers for Jetson and JetPack
 

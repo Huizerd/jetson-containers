@@ -31,12 +31,22 @@ ENV PYTHONIOENCODING=utf-8
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
     
 # build ROS from source
-COPY ros2_build.sh ros2_build.sh
-RUN ./ros2_build.sh
+# COPY ros2_build.sh ros2_build.sh
+# RUN ./ros2_build.sh
+
+# install ROS from packages
+# https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html
+RUN apt install -y software-properties-common curl
+RUN add-apt-repository universe
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null
+RUN apt update && apt upgrade -y
+RUN apt install -y ros-${ROS_VERSION}-${ROS_PACKAGE//_/-}
+RUN apt install -y ros-dev-tools
 
 # Set the default DDS middleware to cyclonedds
 # https://github.com/ros2/rclcpp/issues/1335
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+# ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 # commands will be appended/run by the entrypoint which sources the ROS environment
 COPY ros_entrypoint.sh /ros_entrypoint.sh
