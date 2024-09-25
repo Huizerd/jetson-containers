@@ -1,5 +1,30 @@
 [![a header for a software project about building containers for AI and machine learning](https://raw.githubusercontent.com/dusty-nv/jetson-containers/docs/docs/images/header_blueprint_rainbow.jpg)](https://www.jetson-ai-lab.com)
 
+# Container for event-orin
+
+- Jetpack 6.0 (L4T R36.3.0)
+- CUDA 12.4
+- cuDNN 9.0
+- TensorRT 10.0
+- PyTorch 2.3.0
+- ONNX Runtime 1.19
+
+Still needs ROS2 Humble, but `jetson-containers` builds that from source and that gives problems with OpenCV compilation (gives errors for CUDA 12.4, worked fine for 12.2). So we'll install ROS later in a Dockerfile.
+
+To build a container like this (after installing `jetson-containers` following the [instructions](/docs/setup.md)), do:
+
+```bash
+CUDA_VERSION=12.4 jetson-containers build --name=event-orin cuda:12.4 pytorch:2.3 tensorrt:10.0 onnxruntime:1.19
+```
+
+which results in `event-orin:r36.3.0-cu124`. Run the container like so:
+
+```bash
+jetson-containers run event-orin:r36.3.0-cu124
+```
+
+This can then be used in a Dockerfile to include all the remaining stuff we need for setup!
+
 # Machine Learning Containers for Jetson and JetPack
 
 [![l4t-pytorch](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-pytorch_jp51.yml?label=l4t-pytorch)](/packages/l4t/l4t-pytorch)  [![l4t-tensorflow](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-tensorflow-tf2_jp51.yml?label=l4t-tensorflow)](/packages/l4t/l4t-tensorflow) [![l4t-ml](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-ml_jp51.yml?label=l4t-ml)](/packages/l4t/l4t-ml) [![l4t-diffusion](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-diffusion_jp51.yml?label=l4t-diffusion)](/packages/l4t/l4t-diffusion) [![l4t-text-generation](https://img.shields.io/github/actions/workflow/status/dusty-nv/jetson-containers/l4t-text-generation_jp60.yml?label=l4t-text-generation)](/packages/l4t/l4t-text-generation)
